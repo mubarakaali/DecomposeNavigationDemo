@@ -1,91 +1,88 @@
 package navigation
 
 import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.decompose.ExperimentalDecomposeApi
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.bringToFront
 import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.router.stack.pop
-import com.arkivanov.decompose.router.stack.pushNew
 import kotlinx.serialization.Serializable
 import navigation.bottomnav.BottomNavEvents
+import navigation.navigation_a.ARootComponent
 
 class RootComponent(
     componentContext: ComponentContext
 ) : ComponentContext by componentContext {
 
-    private val navigation = StackNavigation<Configuration>()
+    private val navigation = StackNavigation<RootConfiguration>()
     val childStack = childStack(
         source = navigation,
-        serializer = Configuration.serializer(),
-        initialConfiguration = Configuration.BottomNavA,
+        serializer = RootConfiguration.serializer(),
+        initialConfiguration = RootConfiguration.BottomNavA,
         handleBackButton = true,
         childFactory = ::createChild
     )
 
-    @OptIn(ExperimentalDecomposeApi::class)
     private fun createChild(
-        config: Configuration,
+        config: RootConfiguration,
         context: ComponentContext
     ): Child {
 
         return when (config) {
-            Configuration.BottomNavA -> Child.ScreenA(
-                ScreenAComponent(
+            RootConfiguration.BottomNavA -> Child.ScreenARoot(
+                ARootComponent(
                     componentContext = context,
-                    onNavigateToScreenB = { text ->
-                        navigatePushNew(Configuration.BottomNavB(text))
-                    }
+//                    onNavigateToScreenB = { text ->
+//                        navigatePushNew(RootConfiguration.BottomNavB(text))
+//                    }
                 )
             )
 
-            is Configuration.BottomNavB -> Child.ScreenB(
+            is RootConfiguration.BottomNavB -> Child.ScreenB(
                 ScreenBComponent(
                     text = config.text,
                     componentContext = context,
-                    onGoBack = {
-                        navigation.pop()
-                    }
+                    onGoBack = navigation::pop
                 )
             )
 
-            is Configuration.BottomNavC -> Child.ScreenC
-            is Configuration.BottomNavD -> TODO()
-            is Configuration.BottomNavE -> TODO()
+            is RootConfiguration.BottomNavC -> Child.ScreenC
+            is RootConfiguration.BottomNavD -> TODO()
+            is RootConfiguration.BottomNavE -> TODO()
         }
     }
 
 
     sealed class Child {
-        data class ScreenA(val component: ScreenAComponent) : Child()
+        data class ScreenARoot(val component: ARootComponent) : Child()
+//        data class ScreenA(val component: ScreenAComponent) : Child()
         data class ScreenB(val component: ScreenBComponent) : Child()
         data object ScreenC : Child()
     }
 
     @Serializable
-    sealed class Configuration {
+    sealed class RootConfiguration {
         @Serializable
-        data object BottomNavA : Configuration()
+        data object BottomNavA : RootConfiguration()
 
         @Serializable
-        data class BottomNavB(val text: String) : Configuration()
-
-        data object BottomNavC : Configuration()
-        data object BottomNavD : Configuration()
-        data object BottomNavE : Configuration()
+        data class BottomNavB(val text: String) : RootConfiguration()
+        @Serializable
+        data object BottomNavC : RootConfiguration()
+        data object BottomNavD : RootConfiguration()
+        data object BottomNavE : RootConfiguration()
     }
 
     fun onNavItemClick(item: BottomNavEvents) {
         when (item) {
-            is BottomNavEvents.NavAClick -> navigatePushNew(Configuration.BottomNavA)
-            is BottomNavEvents.NavBClick -> navigatePushNew(Configuration.BottomNavB("hehehe"))
-            is BottomNavEvents.NavCClick -> navigatePushNew(Configuration.BottomNavC)
-            is BottomNavEvents.NavDClick -> navigatePushNew(Configuration.BottomNavD)
-            is BottomNavEvents.NavEClick -> navigatePushNew(Configuration.BottomNavE)
+            is BottomNavEvents.NavAClick -> navigatePushNew(RootConfiguration.BottomNavA)
+            is BottomNavEvents.NavBClick -> navigatePushNew(RootConfiguration.BottomNavB("hehehe"))
+            is BottomNavEvents.NavCClick -> navigatePushNew(RootConfiguration.BottomNavC)
+            is BottomNavEvents.NavDClick -> navigatePushNew(RootConfiguration.BottomNavD)
+            is BottomNavEvents.NavEClick -> navigatePushNew(RootConfiguration.BottomNavE)
         }
     }
 
-    private fun navigatePushNew(configuration: Configuration) {
-        navigation.bringToFront(configuration)
+    private fun navigatePushNew(rootConfiguration: RootConfiguration) {
+        navigation.bringToFront(rootConfiguration)
     }
 }

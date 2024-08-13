@@ -1,5 +1,6 @@
 package navigation.bottomnav
 
+
 data class NavItemModel(
     val title:String,
     val route:BottomNavEvents = BottomNavEvents.NavAClick

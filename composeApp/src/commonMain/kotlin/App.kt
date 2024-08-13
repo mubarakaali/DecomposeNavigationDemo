@@ -1,4 +1,3 @@
-
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,7 +24,7 @@ import com.arkivanov.decompose.extensions.compose.jetbrains.stack.animation.stac
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import navigation.RootComponent
 import navigation.bottomnav.navItems
-import screens.ScreenA
+import navigation.navigation_a.ARootsChildrens
 import screens.ScreenB
 import screens.ScreenC
 
@@ -36,51 +35,58 @@ fun App(root: RootComponent) {
 
         Scaffold(
             topBar = {
-                Text("Top Bar")
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 10.dp, vertical = 20.dp),
+                    text = "Top Bar",
+                    textAlign = TextAlign.Center
+                )
             },
             content = {
                 Children(
                     stack = childStack,
                     animation = stackAnimation(slide())
                 ) { child ->
-
+//                    is RootComponent.Child.ScreenA -> ScreenA(instance.component)
                     when (val instance = child.instance) {
-                        is RootComponent.Child.ScreenA -> ScreenA(instance.component)
+                        is RootComponent.Child.ScreenARoot -> ARootsChildrens(instance.component)
                         is RootComponent.Child.ScreenB -> ScreenB(
                             instance.component.text,
                             instance.component
                         )
+
                         is RootComponent.Child.ScreenC -> ScreenC("Alert Dialog Screen Sample")
                     }
                 }
             },
             bottomBar = {
-               Surface (
-                   modifier = Modifier
-                       .height(60.dp)
-                       .fillMaxWidth(),
-                   shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
-                   color = Color.LightGray,
-               ) {
-                   LazyRow(
-                       modifier = Modifier.fillMaxSize().padding(horizontal = 10.dp),
-                       horizontalArrangement = Arrangement.SpaceBetween,
-                       verticalAlignment = Alignment.CenterVertically
-                   ) {
-                       itemsIndexed(navItems) {index, it ->
-                           Text(
-                               modifier = Modifier
-                                   .fillMaxWidth()
-                                   .clickable {
-                                       if (index<3)
-                                           root.onNavItemClick(it.route)
-                                   },
-                               text = it.title,
-                               textAlign = TextAlign.Center
-                           )
-                       }
-                   }
-               }
+                Surface(
+                    modifier = Modifier
+                        .height(60.dp)
+                        .fillMaxWidth(),
+                    shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
+                    color = Color.LightGray,
+                ) {
+                    LazyRow(
+                        modifier = Modifier.fillMaxSize().padding(horizontal = 10.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        itemsIndexed(navItems) { index, it ->
+                            Text(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable {
+                                        if (index < 3)
+                                            root.onNavItemClick(it.route)
+                                    },
+                                text = it.title,
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
+                }
 
 
             })

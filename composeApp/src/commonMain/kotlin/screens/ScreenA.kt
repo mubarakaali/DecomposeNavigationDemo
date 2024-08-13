@@ -20,7 +20,9 @@ import navigation.ScreenAEvent
 @Composable
 fun ScreenA(component: ScreenAComponent) {
     val text by component.text.subscribeAsState()
+
     Column(
+
         modifier = Modifier
             .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
