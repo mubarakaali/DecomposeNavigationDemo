@@ -17,9 +17,11 @@ import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import navigation.ScreenAComponent
 import navigation.ScreenAEvent
 
+
 @Composable
 fun ScreenA(component: ScreenAComponent) {
     val text by component.text.subscribeAsState()
+
 
     Column(
 
